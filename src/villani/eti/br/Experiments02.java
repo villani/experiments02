@@ -31,11 +31,9 @@ public class Experiments02 {
 		log.write("Lendo entradas:");
 		log.write("- Conjunto de amostras: " + entradas.get("dataset"));
 		log.write("- Caminho da pasta de imagens: " + entradas.get("folder"));
-		log.write("- Arquivo com a relaÁ„o imagem/IRMA: " + entradas.get("csv"));
-		log.write("- Arquivo estrutura cÛdigo irma: " + entradas.get("txt"));
-		log.write("- Quantidade de imagens que ser„o utilizadas: " + entradas.get("images"));
-		log.write("- Limite de pontos-chave obtidos: " + entradas.get("keypoints"));
-		log.write("- Tamanho do histograma SIFT: " + entradas.get("histoSize"));
+		log.write("- Arquivo com a rela√ß√£o imagem/IRMA: " + entradas.get("csv"));
+		log.write("- Arquivo estrutura c√≥digo irma: " + entradas.get("txt"));
+		log.write("- Quantidade de imagens que ser√£o utilizadas: " + entradas.get("images"));
 		
 		log.write("Obtendo conjunto de amostras:");
 		Amostras.setLog(log);

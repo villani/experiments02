@@ -1,252 +1,122 @@
 package villani.eti.br;
 
-import ij.ImagePlus;
-
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.TreeMap;
-import java.util.Vector;
 
-import mpi.cbg.fly.Feature;
-import mpi.cbg.fly.Filter;
-import mpi.cbg.fly.FloatArray2D;
-import mpi.cbg.fly.FloatArray2DSIFT;
-import mpi.cbg.fly.ImageArrayConverter;
+import javax.imageio.ImageIO;
+
 import mulan.data.MultiLabelInstances;
-import weka.clusterers.SimpleKMeans;
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.converters.ArffLoader;
-import weka.core.converters.ArffSaver;
+import net.semanticmetadata.lire.imageanalysis.mpeg7.EdgeHistogramImplementation;
 
 public class Caracteristicas {
-	
+
 	private static LogBuilder log;
-	private static TreeMap<String,String> entradas;
+	private static TreeMap<String, String> entradas;
 	private static File folder;
-	private static File[] imagens;
 	private static String dataset;
 	private static String csv;
 	private static String txt;
-	private static int images;
-	private static int keypoints;
-	private static int histoSize;
-	
-	public static void setLog(LogBuilder log){
+
+	public static void setLog(LogBuilder log) {
 		Caracteristicas.log = log;
 	}
-	
-	public static void setEntradas(TreeMap<String,String> entradas){
+
+	public static void setEntradas(TreeMap<String, String> entradas) {
 		Caracteristicas.entradas = entradas;
 		folder = new File(Caracteristicas.entradas.get("folder"));
 		dataset = Caracteristicas.entradas.get("dataset");
 		csv = Caracteristicas.entradas.get("csv");
 		txt = Caracteristicas.entradas.get("txt");
-		images = Integer.parseInt(Caracteristicas.entradas.get("images"));
-		keypoints = Integer.parseInt(Caracteristicas.entradas.get("keypoints"));
-		histoSize = Integer.parseInt(Caracteristicas.entradas.get("histoSize"));
-	}
-	
-	public static void obtemPontosChave(File aux) throws Exception{
-		if(!folder.exists()) {
-			log.write("- A pasta de imagens informada n„o existe: " + folder.getAbsolutePath());
-			throw new Exception("- A pasta de imagens informada n„o existe: " + folder.getAbsolutePath());
-		} else {
-			log.write("- Pasta de imagens encontrada: " + folder.getAbsolutePath());
-			log.write("- Obtendo imagens da pasta " + folder.getName());
-			imagens = folder.listFiles();
-			
-			log.write("Criando conjunto auxiliar:");
-			log.write("- Definindo lista de atributos");
-			ArrayList<Attribute> listaDeAtributos = new ArrayList<Attribute>();
-			for(int i = 0; i < 128; i++){
-				listaDeAtributos.add(new Attribute("feat" + i));
-			}
-			
-			log.write("- Criando um conjunto de instancias que armazenar· as imagens");
-			Instances instancias = new Instances("sift",listaDeAtributos,10);
-			
-			log.write("- Criando ArffSaver para armazenar o conjunto auxiliar em arquivo");
-			ArffSaver saver = new ArffSaver();
-			File datasetAux = aux;
-			try {
-				saver.setFile(datasetAux);
-			} catch (IOException e) {
-				log.write("- Falha ao manipular o arquivo " + datasetAux.getAbsolutePath() + ". Erro: " + e.getMessage());
-				System.exit(0);
-			}
-			saver.setStructure(instancias);
-			saver.setRetrieval(ArffSaver.INCREMENTAL);
-			
-			log.write("- Obtendo os pontos-chave das imagens");
-			ArrayList<String> rotulosAuxiliar = new ArrayList<String>();
-			int qtdeImagens = 0;
-			for(File imagem : imagens){
-				if(qtdeImagens == images) break;
-				ImagePlus ip = new ImagePlus(imagem.getAbsolutePath());
-				FloatArray2DSIFT sift = new FloatArray2DSIFT(4,8);
-				FloatArray2D fa = ImageArrayConverter.ImageToFloatArray2D(ip.getProcessor().convertToFloat());
-				Filter.enhance(fa, 1.0f);
-				float initial_sigma = 1.6f;
-				fa = Filter.computeGaussianFastMirror(fa, (float)Math.sqrt(initial_sigma * initial_sigma - 0.25));
-				sift.init(fa, 3, initial_sigma, 64, 1024);
-				Vector<Feature> pontosChave = sift.run(1024);
-				int qtdePontosChave = 0;
-				for(Feature ponto : pontosChave){
-					if(qtdePontosChave == keypoints) break;
-					Instance instancia = new DenseInstance(128);
-					instancia.setDataset(instancias);
-					for(int j = 0; j < ponto.descriptor.length; j++) instancia.setValue(j, ponto.descriptor[j]);
-					try {
-						saver.writeIncremental(instancia);
-					} catch (IOException e) {
-						log.write("- Falha ao salvar a instancia no conjunto auxiliar " + datasetAux.getAbsolutePath() + ". Erro: " + e.getMessage());
-						System.exit(0);
-					}
-					rotulosAuxiliar.add(imagem.getName());
-					qtdePontosChave++;
-				}
-				qtdeImagens++;
-			}
-			saver.writeIncremental(null);
-			
-			log.write("Preparando lista de rÛtulos do conjunto auxiliar:");
-			File rotulos = new File(dataset + "-aux.labels");
-			try {
-				log.write("- Armazenado lista de rÛtulos em: " + rotulos.getPath());
-				FileWriter escritor = new FileWriter(rotulos);
-				for(String rotulo : rotulosAuxiliar){
-					String nomeImagem = rotulo.split("\\.")[0];
-					escritor.write(nomeImagem + "\n");					
-				}
-				escritor.close();
-			} catch (IOException e) {
-				log.write("- Falha ao salvar lista de rÛtulos do conjunto auxiliar: " + e.getMessage());
-				System.exit(0);
-			}
-			
-		}
-		 	
 	}
 
-	public static MultiLabelInstances obtemHistogramaSIFT(){
-		File datasetAux = new File(dataset + "-aux.arff");
-		if(datasetAux.exists()) log.write("- Conjunto auxiliar encontrado: " + datasetAux.getAbsolutePath());
-		else{
-			log.write("- O conjunto auxiliar n„o foi encontrado em: " + datasetAux.getAbsolutePath());
-			log.write("Criando novo conjunto auxiliar:");
-			try{
-				obtemPontosChave(datasetAux);
-			} catch(Exception e){
-				log.write("Falha ao criar conjunto auxiliar: " + e.getMessage());
-				System.exit(0);
-			}
-		}
-		
-		log.write("Construindo conjunto de amostras com caracterÌsticas de histograma SIFT:");
+	public static MultiLabelInstances obtemEHD() {
+
+		log.write("Construindo conjunto de instancias EHD");
 		MultiLabelInstances instanciasML = null;
-		
-		log.write(" - Obtendo a relaÁ„o nome da imagem/cÛdigo IRMA do arquivo: " + csv);
-		File relacaoImagemCodigo = new File(csv);
-		TreeMap<String,String> relacao = new TreeMap<String,String>();
-		XmlIrmaCodeBuilder xicb;
-		IrmaCode conversor = null;
-		try {
-			Scanner leitor01 = new Scanner(relacaoImagemCodigo);
-			while (leitor01.hasNextLine()) {
-				String[] campos = leitor01.nextLine().split(";");
-				relacao.put(campos[0], campos[1]);
-			}
-			leitor01.close();
 
-			log.write("- Criando arquivo xml com a estrutura de cÛdigos IRMA");
+		log.write("- Obtendo o conjunto de r√≥tulos IRMA");
+		XmlIrmaCodeBuilder xicb;
+		try {
+			log.write("- Criando arquivo xml com a estrutura de c√≥digos IRMA");
 			xicb = new XmlIrmaCodeBuilder(txt, dataset);
 			if (xicb.hasXml())
-				log.write("- Arquivo xml com a estrutura de cÛdigo IRMA criado com Íxito");
-
-			log.write("- Criando objeto que converte o cÛdigo IRMA para bin·rio e que necessita do xml criado anteriormente");
-			conversor = new IrmaCode(dataset);
+				log.write("- Arquivo xml com a estrutura de c√≥digo IRMA criado com √™xito");
 		} catch (IOException e) {
-			log.write("- Falha ao obter relaÁ„o nome da imagem/ cÛdigo IRMA: " + e.getMessage());
+			log.write("- Falha ao obter rela√ß√£o nome da imagem/ c√≥digo IRMA: "
+					+ e.getMessage());
 			System.exit(0);
 		}
-		
-		log.write("- Instanciando amostras do conjunto auxiliar");
-		ArffLoader carregador = new ArffLoader();
+
+		log.write("- Definindo atributos do conjunto");
 		try {
-			carregador.setFile(datasetAux);
-			Instances instancias = carregador.getDataSet();
-			
-			log.write("- Agrupando amostras");
-			SimpleKMeans km = new SimpleKMeans();
-			km.setNumClusters(histoSize);
-			km.setOptions(new String[]{"-O","-fast"});
-			km.buildClusterer(instancias);
-			int[] atribuicoes = km.getAssignments();
-			
-			log.write("Construindo histograma SIFT:");
-			log.write("- Obtendo lista de rÛtulos do conjunto auxiliar");
-			File rotulos = new File(dataset + "-aux.labels");
-			Scanner leitor = new Scanner(rotulos);
-			ArrayList<String> listaDeImagens = new ArrayList<String>();
-			while(leitor.hasNextLine()) 
-				listaDeImagens.add(leitor.nextLine());
-			leitor.close();
-			
-			log.write("- Calculando valor dos bins do histograma SIFT");
-			TreeMap<String,int[]> histoSIFT = new TreeMap<String, int[]>();
-			for(int i = 0; i < atribuicoes.length; i++){
-				String img = listaDeImagens.get(i);
-				if(! histoSIFT.containsKey(img))
-						histoSIFT.put(img, new int[histoSize]);
-				histoSIFT.get(img)[atribuicoes[i]]++;
-			}
-			
-			log.write("Criando conjunto de amostras com as caracterÌsticas de histograma SIFT:");
-			RelationBuilder instanciasSIFT = new RelationBuilder(dataset);
-			
-			log.write("- Definindo os atributos do conjunto");
-			for(int i = 0; i < histoSize; i++){
-				instanciasSIFT.defineAttribute("histSIFT" + i, "numeric");
-			}
-			
-			log.write("- Salvando a lista de atributos e incluindo os rÛtulos a partir do xml informado no construtor");
-			instanciasSIFT.saveAttributes();
-			
-			log.write("- Armazenando no conjunto as amostras com as caracterÌsticas de histograma SIFT");
-			for(String img : histoSIFT.keySet()){		
-				int[] histograma = histoSIFT.get(img);
-				String amostra = "";
-				
-				// armazena os valores do histograma
-				for(int i : histograma){
-					amostra += i + ",";
+			RelationBuilder instanciasEHD = new RelationBuilder(dataset);
+			for (int i = 0; i < 80; i++)
+				instanciasEHD.defineAttribute("ehd" + i, "numeric");
+
+			log.write("- Salvando a lista de atributos e incluindo a lista de r√≥tulos a partir do xml");
+			instanciasEHD.saveAttributes();
+
+			log.write("Armazenando no conjunto as amostras com caracter√≠sticas EHD");
+			try {
+				log.write(" - Obtendo a rela√ß√£o nome da imagem/c√≥digo IRMA do arquivo: " + csv);
+				File relacaoImagemCodigo = new File(csv);
+				TreeMap<String, String> relacao = new TreeMap<String, String>();
+				Scanner leitor01 = new Scanner(relacaoImagemCodigo);
+				while (leitor01.hasNextLine()) {
+					String[] campos = leitor01.nextLine().split(";");
+					relacao.put(campos[0], campos[1]);
+				}
+				leitor01.close();
+
+				log.write("- Criando objeto que converte o codigo IRMA para bin√°rio e que tamb√©m necessita do xml criado anteriormente");
+				IrmaCode conversor = new IrmaCode(dataset);
+
+				log.write("- Obtendo caracter√≠sticas EHD para cada imagem");
+				File[] imagens = folder.listFiles();
+				for (File imagem : imagens) {
+					//if(!imagem.canRead()) System.out.println(imagem.getAbsolutePath());
+
+					// Construo o extrator e forne√ßo a imagem para obter caracter√≠sticas
+					EdgeHistogramImplementation extrator = new EdgeHistogramImplementation(ImageIO.read(imagem));
+
+					// Obtenho o histograma de bordas referente
+					int[] ehd = extrator.setEdgeHistogram();
+
+					// Crio uma amostra para armazenar as caracter√≠sticas obtidas
+					String amostra = "";
+					for (int e : ehd) amostra += e + ",";
+
+					// Armazeno o respectivo r√≥tulo IRMA bin√°rio √† amostra
+					String nomeImg = imagem.getName().split("\\.")[0];
+					amostra += conversor.toBinary(relacao.get(nomeImg));
+
+					// Armazeno a amostra no conjunto de dados
+					instanciasEHD.insertData(amostra);
 				}
 				
-				// armazena conjunto de rÛtulos bin·rio da amostra	
-				img = relacao.get(img);
-				img = conversor.toBinary(img);
-				amostra += img;
-				
-				// armazena a amostra no conjunto
-				instanciasSIFT.insertData(amostra);
+				log.write("Novo conjunto de amostras salvo em: " + dataset + ".arff");
+				instanciasML = instanciasEHD.saveRelation(); // armazenando o retorno do m√©todo
+
+			} catch (FileNotFoundException e) {
+				log.write("Um arquivo n√£o pode ser encontrado: " + e.getMessage());
+				System.exit(0);
+			} catch (IOException e) {
+				log.write("Falha ao ler uma imagem: " + e.getMessage());
+				System.exit(0);
+			} catch (Exception e) {
+				log.write("Falha ao inserir a amostra: " + e.getMessage());
+				System.exit(0);
 			}
-			
-			log.write("- Salvando o novo conjunto de amostras em: " + dataset + ".arff");
-			 
-			instanciasML = instanciasSIFT.saveRelation();
-			
-		} catch(Exception e){
-			log.write("- Falha na construÁ„o do conjunto de amostras com caracterÌsticas de histograma SIFT: " + e.fillInStackTrace());
+
+		} catch (Exception e) {
+			log.write("Falha ao construir conjunto de instancias EHD: "
+					+ e.getMessage());
 			System.exit(0);
 		}
 		
 		return instanciasML;
-		
 	}
 }

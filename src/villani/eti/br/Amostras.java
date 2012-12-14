@@ -30,14 +30,14 @@ public class Amostras {
 			if (arffFile.exists()) {
 				log.write("- Conjunto de amostras encontrado em: " + arffFile.getName());
 				if(xmlFile.exists()) log.write("- Arquivo xml encontrado em: " + xmlFile.getName());
-				else log.write("- Arquivo xml N√O encontrado em: " + xmlFile.getName());
+				else log.write("- Arquivo xml N√ÉO encontrado em: " + xmlFile.getName());
 				instanciasML = new MultiLabelInstances(arffFile.getName(), xmlFile.getName());
 			} else {
-				log.write("- O conjunto de amostras ainda n„o existe em: " + arffFile.getAbsolutePath());
+				log.write("- O conjunto de amostras ainda n√£o existe em: " + arffFile.getAbsolutePath());
 				log.write("Obtendo novo conjunto de amostras: ");
 				Caracteristicas.setLog(log);
 				Caracteristicas.setEntradas(entradas);
-				instanciasML = Caracteristicas.obtemHistogramaSIFT();
+				instanciasML = Caracteristicas.obtemEHD();
 			}
 		} catch (Exception e) {
 			log.write("- Falha ao obter conjunto de amostras: " + e.fillInStackTrace());

@@ -1,0 +1,36 @@
+Fri Dec 14 17:38:37 BRST 2012: LOG INITIALIZED
+Fri Dec 14 17:38:37 BRST 2012: Iniciando experimento 2:
+Fri Dec 14 17:38:37 BRST 2012: Obtendo as entradas do sistema a partir de conf.ini.
+Fri Dec 14 17:38:37 BRST 2012: Entradas obtidas.
+Fri Dec 14 17:38:37 BRST 2012: Lendo entradas:
+Fri Dec 14 17:38:37 BRST 2012: - Conjunto de amostras: med201212_1000imgs_80ehd
+Fri Dec 14 17:38:37 BRST 2012: - Caminho da pasta de imagens: /home/villani/Documentos/ImageCLEFmed2009_train.02
+Fri Dec 14 17:38:37 BRST 2012: - Arquivo com a relação imagem/IRMA: /home/villani/Documentos/ImageCLEFmed2009_train_codes.02.csv
+Fri Dec 14 17:38:37 BRST 2012: - Arquivo estrutura código irma: 1345115140_export_eng.txt
+Fri Dec 14 17:38:37 BRST 2012: - Quantidade de imagens que serão utilizadas: 10
+Fri Dec 14 17:38:37 BRST 2012: Obtendo conjunto de amostras:
+Fri Dec 14 17:38:37 BRST 2012: - O conjunto de amostras ainda não existe em: /home/villani/workspace/experiments02/med201212_1000imgs_80ehd.arff
+Fri Dec 14 17:38:37 BRST 2012: Obtendo novo conjunto de amostras: 
+Fri Dec 14 17:38:37 BRST 2012: Construindo conjunto de instancias EHD
+Fri Dec 14 17:38:37 BRST 2012: - Obtendo o conjunto de rótulos IRMA
+Fri Dec 14 17:38:37 BRST 2012: - Criando arquivo xml com a estrutura de códigos IRMA
+Fri Dec 14 17:38:37 BRST 2012: - Arquivo xml com a estrutura de código IRMA criado com êxito
+Fri Dec 14 17:38:37 BRST 2012: - Definindo atributos do conjunto
+Fri Dec 14 17:38:37 BRST 2012: - Salvando a lista de atributos e incluindo a lista de rótulos a partir do xml
+Fri Dec 14 17:38:37 BRST 2012: Armazenando no conjunto as amostras com características EHD
+Fri Dec 14 17:38:37 BRST 2012:  - Obtendo a relação nome da imagem/código IRMA do arquivo: /home/villani/Documentos/ImageCLEFmed2009_train_codes.02.csv
+Fri Dec 14 17:38:37 BRST 2012: - Criando objeto que converte o codigo IRMA para binário e que também necessita do xml criado anteriormente
+Fri Dec 14 17:38:37 BRST 2012: - Obtendo características EHD para cada imagem
+Fri Dec 14 17:38:39 BRST 2012: Falha ao inserir a amostra: null
+Fri Dec 14 17:38:39 BRST 2012: Avaliando classificadores: 
+Fri Dec 14 17:38:39 BRST 2012: - Instanciando avaliador
+Fri Dec 14 17:38:39 BRST 2012: - Instanciando registradores dos resultados
+Fri Dec 14 17:38:39 BRST 2012: - Instanciando MLkNN
+Fri Dec 14 17:38:39 BRST 2012: - Avaliando classificador class mulan.classifier.lazy.MLkNN
+Fri Dec 14 17:38:39 BRST 2012: - Falha ao avaliar o classificador 01: Evaluation data object is null.
+Fri Dec 14 17:38:39 BRST 2012: - Instanciando BRkNN
+Fri Dec 14 17:38:39 BRST 2012: - Avaliando classificador class mulan.classifier.lazy.BRkNN
+Fri Dec 14 17:38:39 BRST 2012: - Falha ao avaliar o classificador 02: Evaluation data object is null.
+Fri Dec 14 17:38:39 BRST 2012: Fim do experimento
+Fri Dec 14 17:38:39 BRST 2012: LOG FINALIZED
+
