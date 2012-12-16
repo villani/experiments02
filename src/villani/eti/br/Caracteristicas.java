@@ -19,6 +19,7 @@ public class Caracteristicas {
 	private static String dataset;
 	private static String csv;
 	private static String txt;
+	private static int images;
 
 	public static void setLog(LogBuilder log) {
 		Caracteristicas.log = log;
@@ -30,6 +31,7 @@ public class Caracteristicas {
 		dataset = Caracteristicas.entradas.get("dataset");
 		csv = Caracteristicas.entradas.get("csv");
 		txt = Caracteristicas.entradas.get("txt");
+		images = Integer.parseInt(Caracteristicas.entradas.get("images"));
 	}
 
 	public static MultiLabelInstances obtemEHD() {
@@ -76,7 +78,9 @@ public class Caracteristicas {
 
 				log.write("- Obtendo características EHD para cada imagem");
 				File[] imagens = folder.listFiles();
+				int qtdeImagens = 0;
 				for (File imagem : imagens) {
+					if(qtdeImagens == images) break;
 					//if(!imagem.canRead()) System.out.println(imagem.getAbsolutePath());
 
 					// Construo o extrator e forneço a imagem para obter características
@@ -95,6 +99,8 @@ public class Caracteristicas {
 
 					// Armazeno a amostra no conjunto de dados
 					instanciasEHD.insertData(amostra);
+					
+					qtdeImagens++;
 				}
 				
 				log.write("Novo conjunto de amostras salvo em: " + dataset + ".arff");
