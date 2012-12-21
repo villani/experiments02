@@ -81,7 +81,9 @@ public class Caracteristicas {
 				int qtdeImagens = 0;
 				for (File imagem : imagens) {
 					if(qtdeImagens == images) break;
+					if(imagem.getName().split("\\.")[1].equals("tif")) continue;
 					//if(!imagem.canRead()) System.out.println(imagem.getAbsolutePath());
+					//System.out.print(imagem.getName()+";");
 
 					// Construo o extrator e forneço a imagem para obter características
 					EdgeHistogramImplementation extrator = new EdgeHistogramImplementation(ImageIO.read(imagem));

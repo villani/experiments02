@@ -1,0 +1,20 @@
+Fri Dec 21 15:31:27 BRST 2012: LOG INITIALIZED
+Fri Dec 21 15:31:27 BRST 2012: Iniciando experimento 2:
+Fri Dec 21 15:31:27 BRST 2012: Obtendo as entradas do sistema a partir de conf.ini.
+Fri Dec 21 15:31:27 BRST 2012: Entradas obtidas.
+Fri Dec 21 15:31:27 BRST 2012: Lendo entradas:
+Fri Dec 21 15:31:27 BRST 2012: - Conjunto de amostras: med201212_3000imgs_80ehd
+Fri Dec 21 15:31:27 BRST 2012: - Caminho da pasta de imagens: /home/villani/Documentos/ImageCLEFmed2009_train.02
+Fri Dec 21 15:31:27 BRST 2012: - Arquivo com a relação imagem/IRMA: /home/villani/Documentos/ImageCLEFmed2009_train_codes.02.csv
+Fri Dec 21 15:31:27 BRST 2012: - Arquivo estrutura código irma: 1345115140_export_eng.txt
+Fri Dec 21 15:31:27 BRST 2012: - Quantidade de imagens que serão utilizadas: 3000
+Fri Dec 21 15:31:27 BRST 2012: Obtendo conjunto de amostras:
+Fri Dec 21 15:31:27 BRST 2012: - Conjunto de amostras encontrado em: med201212_3000imgs_80ehd.arff
+Fri Dec 21 15:31:27 BRST 2012: - Arquivo xml encontrado em: med201212_3000imgs_80ehd.xml
+Fri Dec 21 15:31:34 BRST 2012: Avaliando classificadores: 
+Fri Dec 21 15:31:34 BRST 2012: - Instanciando avaliador
+Fri Dec 21 15:31:34 BRST 2012: - Instanciando registradores dos resultados
+Fri Dec 21 15:31:34 BRST 2012: - Instanciando MLkNN
+Fri Dec 21 15:31:34 BRST 2012: - Avaliando classificador class mulan.classifier.lazy.MLkNN
+
+Ocorre uma OufOfMemory Exception na 3ª partição do processo de validação cruzada da avaliação do primeiro classificador.
